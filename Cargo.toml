@@ -6,10 +6,15 @@ edition = "2021"
 [dependencies]
 scraper = "0.21.0"
 
+[dependencies.futures]
+version = "0.3.31"
+default-features = false
+
 [dependencies.tokio]
 version = "1.4.11"
-features = ["rt-multi-thread", "time"]
+features = ["rt-multi-thread", "time", "net"]
 
 [dependencies.axum]
 version = "0.7.8"
-fetures = ["json"]
+features = ["json", "http1", "tokio"]
+default-features = false

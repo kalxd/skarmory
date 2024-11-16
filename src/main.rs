@@ -1,9 +1,11 @@
-use std::{thread, time::Duration};
+use futures::future;
+use std::time::Duration;
 use tokio::{runtime, time};
 
 mod state;
+mod web;
 
-async fn task_timer(i: usize) {
+async fn create_timer_task(i: usize) {
 	let mut tid = time::interval(Duration::from_secs(10));
 	loop {
 		tid.tick().await;
@@ -12,27 +14,17 @@ async fn task_timer(i: usize) {
 	}
 }
 
-fn create_timer_task() {
-	let rt = runtime::Builder::new_current_thread()
-		.enable_time()
-		.build()
-		.unwrap();
-
-	rt.block_on(task_timer(1));
-}
-
-fn create_web_task() {
+fn main() {
 	let rt = runtime::Builder::new_multi_thread()
 		.enable_all()
 		.build()
 		.unwrap();
-	rt.block_on(task_timer(2));
-}
 
-fn main() {
-	let timer = thread::spawn(create_timer_task);
-	let web = thread::spawn(create_web_task);
+	let state = state::create_init_state();
 
-	timer.join().unwrap();
-	web.join().unwrap();
+	rt.block_on(async move {
+		let timer = create_timer_task(1);
+		let web = web::create_web_task(state);
+		future::join(timer, web).await;
+	});
 }
