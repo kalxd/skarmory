@@ -2,12 +2,12 @@ use std::sync::{Arc, RwLock};
 
 #[derive(Debug)]
 pub struct JandanPic {
-	link: String,
+	pub link: String,
 }
 
 #[derive(Debug)]
 pub struct State {
-	pics: Vec<JandanPic>,
+	pub pics: Vec<JandanPic>,
 }
 
 pub type AppState = Arc<RwLock<State>>;
