@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 scraper = "0.21.0"
+reqwest = "0.12.9"
 
 [dependencies.futures]
 version = "0.3.31"
