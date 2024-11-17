@@ -9,7 +9,7 @@ mod state;
 mod web;
 
 async fn create_timer_task(state: AppState) {
-	let mut tid = time::interval(Duration::from_secs(100000));
+	let mut tid = time::interval(Duration::from_secs(60 * 30));
 	loop {
 		tid.tick().await;
 		if let Err(e) = spide::create_spide_task(state.clone()).await {
