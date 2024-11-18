@@ -1,5 +1,6 @@
 use crate::state::AppState;
 use crate::{error::Result, state::write_state};
+use futures::{stream, StreamExt, TryStreamExt};
 use scraper::{ElementRef, Html, Selector};
 
 const JANDAN_URL: &str = "https://jandan.net/pic";
@@ -32,10 +33,14 @@ fn parse_next_page_link(doc: &Html) -> Option<String> {
 }
 
 async fn parse_one_page(url: &str) -> Result<JandanPage> {
+	dbg!(url);
+
 	let doc = fetch_html(url).await?;
 
 	let link_list = parse_img_link(&doc);
 	let next_page = parse_next_page_link(&doc);
+
+	dbg!(&link_list);
 
 	Ok(JandanPage {
 		img_link_list: link_list,
@@ -43,17 +48,23 @@ async fn parse_one_page(url: &str) -> Result<JandanPage> {
 	})
 }
 
-pub async fn create_spide_task(state: AppState) -> Result<()> {
-	let page = parse_one_page(&JANDAN_URL).await?;
+pub async fn create_spider_task(state: AppState) -> Result<()> {
+	let img_list: Vec<String> = stream::try_unfold(Some(JANDAN_URL.to_string()), |s| async move {
+		match s {
+			Some(url) => {
+				let x = parse_one_page(&url).await?;
+				let it = stream::iter(x.img_link_list.into_iter().map(|x| Ok(x) as Result<_>));
+				Ok(Some((it, x.next_page))) as Result<_>
+			}
+			None => Ok(None),
+		}
+	})
+	.take(3)
+	.try_flatten()
+	.try_collect()
+	.await?;
 
-	let mut total = page.img_link_list;
-
-	if let Some(next_url) = page.next_page {
-		let page = parse_one_page(&next_url).await?;
-		total.extend(page.img_link_list);
-	}
-
-	write_state(&state, total);
+	write_state(&state, img_list);
 
 	Ok(())
 }
