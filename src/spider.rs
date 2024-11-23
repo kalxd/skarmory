@@ -53,16 +53,17 @@ pub async fn create_spider_task(state: AppState) -> Result<()> {
 		match s {
 			Some(url) => {
 				let x = parse_one_page(&url).await?;
-				let it = stream::iter(x.img_link_list.into_iter().map(|x| Ok(x) as Result<_>));
-				Ok(Some((it, x.next_page))) as Result<_>
+				Ok(Some((x.img_link_list, x.next_page))) as Result<_>
 			}
 			None => Ok(None),
 		}
 	})
 	.take(3)
-	.try_flatten()
-	.try_collect()
-	.await?;
+	.try_collect::<Vec<Vec<String>>>()
+	.await?
+	.into_iter()
+	.flatten()
+	.collect();
 
 	write_state(&state, img_list);
 
