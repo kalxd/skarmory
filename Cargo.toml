@@ -14,6 +14,7 @@ default-features = false
 [dependencies.tokio]
 version = "1.4.11"
 features = ["rt-multi-thread", "time", "net"]
+default-features = false
 
 [dependencies.axum]
 version = "0.7.8"
