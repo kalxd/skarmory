@@ -1,8 +1,11 @@
-use ntex::web::{self, Responder};
+use crate::data::db::Uuid;
+use ntex::web::{self, Responder, types::Json};
+
+mod state;
 
 #[web::post("/register")]
-async fn register_api() -> impl Responder {
-	"this is register"
+async fn register_api(state: state::AuthState) -> impl Responder {
+	"hello world"
 }
 
 #[web::post("/login")]

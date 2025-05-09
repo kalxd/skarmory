@@ -17,6 +17,7 @@ pub struct FileConfigDatabase {
 #[derive(Debug, Deserialize)]
 pub struct FileConfig {
 	pub port: u16,
+	pub salt: Option<String>,
 	database: FileConfigDatabase,
 }
 
