@@ -26,3 +26,16 @@ impl<'de> Deserialize<'de> for Uuid {
 			.map_err(|e| D::Error::custom(format!("uuid parsed failed: {e}")))
 	}
 }
+
+#[derive(Debug, sqlx::Type)]
+#[sqlx(transparent)]
+pub struct SaltPassword(String);
+
+impl SaltPassword {
+	pub fn new(password: &str, salt: Option<&str>) -> Self {
+		match salt {
+			Some(salt) => Self(format!("{salt}-{password}-{salt}")),
+			None => Self(password.to_string()),
+		}
+	}
+}
