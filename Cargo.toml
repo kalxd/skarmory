@@ -1,22 +1,24 @@
 [package]
 name = "skarmory"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 
 [dependencies]
-scraper = "0.21.0"
-reqwest = "0.12.9"
+
+[dependencies.config]
+version = "0.15.11"
+default-features = false
+features = ["toml"]
 
 [dependencies.futures]
 version = "0.3.31"
 default-features = false
 
-[dependencies.tokio]
-version = "1.4.11"
-features = ["rt-multi-thread", "time", "net"]
-default-features = false
+[dependencies.sqlx]
+version = "0.8.5"
+features = ["postgres"]
 
-[dependencies.axum]
-version = "0.7.8"
-features = ["json", "http1", "tokio"]
+[dependencies.ntex]
+version = "2.12.4"
+features = ["tokio"]
 default-features = false
