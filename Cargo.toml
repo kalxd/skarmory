@@ -20,7 +20,7 @@ default-features = false
 
 [dependencies.sqlx]
 version = "0.8.5"
-features = ["postgres"]
+features = ["postgres", "runtime-tokio"]
 
 [dependencies.ntex]
 version = "2.12.4"
