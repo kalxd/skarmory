@@ -15,6 +15,12 @@ impl std::fmt::Display for AppError {
 
 impl std::error::Error for AppError {}
 
+impl From<std::io::Error> for AppError {
+	fn from(value: std::io::Error) -> Self {
+		Self::BootErr(value.to_string())
+	}
+}
+
 impl From<config::ConfigError> for AppError {
 	fn from(value: config::ConfigError) -> Self {
 		Self::BootErr(value.to_string())

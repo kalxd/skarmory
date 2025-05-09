@@ -16,7 +16,7 @@ pub struct FileConfigDatabase {
 
 #[derive(Debug, Deserialize)]
 pub struct FileConfig {
-	port: u16,
+	pub port: u16,
 	database: FileConfigDatabase,
 }
 
