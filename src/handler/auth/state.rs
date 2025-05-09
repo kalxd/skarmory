@@ -59,7 +59,11 @@ on conflict do nothing
 		.await?;
 
 		let token: Uuid = sqlx::query_scalar!(
-			r#"insert into session (user_id, token) values ($1, gen_random_uuid()) returning token as "token!: Uuid" "#,
+			r#"
+insert into session (user_id, token)
+values ($1, gen_random_uuid())
+returning token as "token!: Uuid"
+"#,
 			user.id
 		)
 		.fetch_one(&self.0.db)
