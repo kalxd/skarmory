@@ -5,6 +5,10 @@ edition = "2024"
 
 [dependencies]
 
+[dependencies.uuid]
+version = "1.16.0"
+features = ["v4"]
+
 [dependencies.serde]
 version = "1.0.219"
 features = ["derive"]
@@ -20,7 +24,7 @@ default-features = false
 
 [dependencies.sqlx]
 version = "0.8.5"
-features = ["postgres", "runtime-tokio"]
+features = ["postgres", "runtime-tokio", "uuid"]
 
 [dependencies.ntex]
 version = "2.12.4"
