@@ -1,3 +1,5 @@
+use std::borrow::Cow;
+
 use serde::{Deserialize, Serialize, de::Error};
 
 #[derive(Debug, Eq, PartialEq, sqlx::Type, Default)]
@@ -29,13 +31,13 @@ impl<'de> Deserialize<'de> for Uuid {
 
 #[derive(Debug, sqlx::Type)]
 #[sqlx(transparent)]
-pub struct SaltPassword(String);
+pub struct SaltPassword<'a>(Cow<'a, str>);
 
-impl SaltPassword {
-	pub fn new(password: &str, salt: Option<&str>) -> Self {
+impl<'a> SaltPassword<'a> {
+	pub fn new(password: &'a str, salt: Option<&'a str>) -> Self {
 		match salt {
-			Some(salt) => Self(format!("{salt}-{password}-{salt}")),
-			None => Self(password.to_string()),
+			Some(salt) => Self(Cow::Owned(format!("{salt}-{password}-{salt}"))),
+			None => Self(Cow::Borrowed(password)),
 		}
 	}
 }
