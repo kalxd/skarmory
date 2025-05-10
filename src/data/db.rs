@@ -12,7 +12,7 @@ impl Serialize for Uuid {
 		S: serde::Serializer,
 	{
 		let mut buf = uuid::Uuid::encode_buffer();
-		let s = self.0.simple().encode_lower(&mut buf);
+		let s = self.0.hyphenated().encode_lower(&mut buf);
 		serializer.serialize_str(s)
 	}
 }
