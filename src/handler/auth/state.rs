@@ -31,10 +31,7 @@ impl<E: ErrorRenderer> FromRequest<E> for AuthState {
 }
 
 #[derive(Clone, drv::AppEnv)]
-pub struct App {
-	pub a: AppEnv,
-	b: AuthState,
-}
+pub struct App(AppEnv);
 
 impl AuthState {
 	pub async fn register_user(&self, nickname: &str, password: &str) -> Result<SessionUser> {

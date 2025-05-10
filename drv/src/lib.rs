@@ -1,6 +1,8 @@
-use proc_macro2::TokenStream;
+use proc_macro2::{Span, TokenStream};
 use quote::quote;
-use syn::{Data, DeriveInput, Fields, FieldsNamed, Ident, Type, TypePath, parse_macro_input};
+use syn::{
+	Data, DeriveInput, Fields, FieldsNamed, FieldsUnnamed, Ident, Type, TypePath, parse_macro_input,
+};
 
 fn is_app_env_type(ty: &Type) -> bool {
 	match ty {
@@ -9,7 +11,7 @@ fn is_app_env_type(ty: &Type) -> bool {
 	}
 }
 
-fn handle_named_field(name: &Ident, field: &FieldsNamed) -> TokenStream {
+fn handle_named_field(field: &FieldsNamed) -> TokenStream {
 	let extract_ast = field.named.iter().map(|f| {
 		let field_name = f.ident.as_ref().unwrap();
 		let field_type = &f.ty;
@@ -36,22 +38,52 @@ fn handle_named_field(name: &Ident, field: &FieldsNamed) -> TokenStream {
 	let ast = quote! {
 		#(#extract_ast)*
 
-		let state = #name {
+		let state = Self {
 			#(#def_ast),*
 		};
 
 		Ok(state)
 	};
 
-	dbg!(ast.to_string());
-
 	ast
 }
 
-fn handle_struct_field(name: &Ident, field: &Data) -> TokenStream {
+fn handle_uname_field(field: &FieldsUnnamed) -> TokenStream {
+	let extract_ast = field.unnamed.iter().enumerate().map(|(i, f)| {
+		let field_type = &f.ty;
+		let field_name = Ident::new(&format!("state_{i}"), Span::call_site());
+
+		if is_app_env_type(field_type) {
+			quote! {
+				let #field_name = req.app_state::<#field_type>().ok_or(Self::Error::NotConfigured)?;
+			}
+		}
+		else {
+			quote! {
+				let #field_name = <#field_type as ntex::web::FromRequest<E>>::from_request(req, _payload).await?;
+			}
+		}
+	});
+
+	let def_ast = field.unnamed.iter().enumerate().map(|(i, _)| {
+		let field_name = Ident::new(&format!("state_{i}"), Span::call_site());
+		quote! {
+			#field_name.clone()
+		}
+	});
+
+	quote! {
+		#(#extract_ast)*
+
+		Ok(Self(#(#def_ast)*))
+	}
+}
+
+fn handle_struct_field(field: &Data) -> TokenStream {
 	match field {
 		Data::Struct(f) => match &f.fields {
-			Fields::Named(name_field) => handle_named_field(name, name_field),
+			Fields::Named(name_field) => handle_named_field(name_field),
+			Fields::Unnamed(uname_field) => handle_uname_field(uname_field),
 			_ => panic!(""),
 		},
 		_ => panic!("AppEnv仅支持struct定义的数据结构！"),
@@ -63,7 +95,7 @@ pub fn appenv_derive_macro(input: proc_macro::TokenStream) -> proc_macro::TokenS
 	let input = parse_macro_input!(input as DeriveInput);
 
 	let data_name = input.ident;
-	let def = handle_struct_field(&data_name, &input.data);
+	let def = handle_struct_field(&input.data);
 
 	let ast = quote! {
 		impl<E: ntex::web::ErrorRenderer> ntex::web::FromRequest<E> for #data_name {
@@ -74,8 +106,6 @@ pub fn appenv_derive_macro(input: proc_macro::TokenStream) -> proc_macro::TokenS
 			}
 		}
 	};
-
-	println!("{ast}");
 
 	proc_macro::TokenStream::from(ast)
 }
