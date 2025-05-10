@@ -26,7 +26,7 @@ async fn register_api(
 
 #[web::post("/login")]
 async fn login_api() -> impl Responder {
-	"this is login"
+	"hello"
 }
 
 pub fn api() -> web::Scope<web::error::DefaultError> {

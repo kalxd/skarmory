@@ -23,11 +23,17 @@ impl<E: ErrorRenderer> FromRequest<E> for AuthState {
 		req: &ntex::web::HttpRequest,
 		_: &mut ntex::http::Payload,
 	) -> Result<Self, Self::Error> {
-		match req.app_state::<AppEnv>() {
-			Some(state) => Ok(Self(state.clone())),
-			None => Err(StateExtractorError::NotConfigured),
-		}
+		let state = req
+			.app_state::<AppEnv>()
+			.ok_or(StateExtractorError::NotConfigured)?;
+		Ok(Self(state.clone()))
 	}
+}
+
+#[derive(Clone, drv::AppEnv)]
+pub struct App {
+	pub a: AppEnv,
+	b: AuthState,
 }
 
 impl AuthState {
