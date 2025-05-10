@@ -4,7 +4,6 @@ use crate::data::{
 	error::{AppError, Result},
 	user::User,
 };
-use ntex::web::{ErrorRenderer, FromRequest, error::StateExtractorError};
 use serde::Serialize;
 
 #[derive(Debug, Serialize)]
@@ -13,25 +12,8 @@ pub struct SessionUser {
 	user: User,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, drv::State)]
 pub struct AuthState(AppEnv);
-
-impl<E: ErrorRenderer> FromRequest<E> for AuthState {
-	type Error = StateExtractorError;
-
-	async fn from_request(
-		req: &ntex::web::HttpRequest,
-		_: &mut ntex::http::Payload,
-	) -> Result<Self, Self::Error> {
-		let state = req
-			.app_state::<AppEnv>()
-			.ok_or(StateExtractorError::NotConfigured)?;
-		Ok(Self(state.clone()))
-	}
-}
-
-#[derive(Clone, drv::AppEnv)]
-pub struct App(AppEnv);
 
 impl AuthState {
 	pub async fn register_user(&self, nickname: &str, password: &str) -> Result<SessionUser> {

@@ -90,8 +90,8 @@ fn handle_struct_field(field: &Data) -> TokenStream {
 	}
 }
 
-#[proc_macro_derive(AppEnv)]
-pub fn appenv_derive_macro(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+#[proc_macro_derive(State)]
+pub fn state_derive_macro(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
 	let input = parse_macro_input!(input as DeriveInput);
 
 	let data_name = input.ident;
