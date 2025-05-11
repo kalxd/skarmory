@@ -1,5 +1,5 @@
 use db::Uuid;
-use ntex::web::FromRequest;
+use ntex::web::{ErrorRenderer, FromRequest};
 use serde::Serialize;
 use sqlx::PgPool;
 use std::sync::Arc;
@@ -23,7 +23,7 @@ pub struct User {
 	pub nick: String,
 }
 
-impl FromRequest<AppError> for User {
+impl<E: ErrorRenderer> FromRequest<E> for User {
 	type Error = AppError;
 
 	async fn from_request(

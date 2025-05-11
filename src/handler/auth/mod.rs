@@ -1,5 +1,5 @@
 use crate::data::error::{AppError, Result};
-use ntex::web::{self, types::Json};
+use ntex::web::{self, DefaultError, types::Json};
 use serde::Deserialize;
 
 mod state;
@@ -38,6 +38,6 @@ async fn login_api(
 	state.login(&body.nick, &body.password).await.map(Json)
 }
 
-pub fn api() -> web::Scope<web::error::DefaultError> {
+pub fn api() -> web::Scope<DefaultError> {
 	web::scope("/auth").service(register_api).service(login_api)
 }
