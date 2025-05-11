@@ -7,7 +7,6 @@ use std::sync::Arc;
 pub mod config;
 pub mod db;
 pub mod error;
-pub mod user;
 
 use error::AppError;
 

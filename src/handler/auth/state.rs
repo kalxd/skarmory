@@ -1,8 +1,7 @@
 use crate::data::{
-	AppEnv,
+	AppEnv, User,
 	db::{SaltPassword, Uuid},
 	error::{AppError, Result},
-	user::User,
 };
 use serde::Serialize;
 
