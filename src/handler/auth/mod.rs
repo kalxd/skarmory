@@ -1,5 +1,5 @@
 use crate::data::error::{AppError, Result};
-use ntex::web::{self, Responder, types::Json};
+use ntex::web::{self, types::Json};
 use serde::Deserialize;
 
 mod state;
@@ -24,9 +24,18 @@ async fn register_api(
 	Ok(Json(session))
 }
 
+#[derive(Debug, Deserialize)]
+struct LoginBody {
+	nick: String,
+	password: String,
+}
+
 #[web::post("/login")]
-async fn login_api() -> impl Responder {
-	"hello"
+async fn login_api(
+	state: state::AuthState,
+	body: Json<LoginBody>,
+) -> Result<Json<state::SessionUser>> {
+	state.login(&body.nick, &body.password).await.map(Json)
 }
 
 pub fn api() -> web::Scope<web::error::DefaultError> {
