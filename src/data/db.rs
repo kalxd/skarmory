@@ -6,6 +6,14 @@ use serde::{Deserialize, Serialize, de::Error};
 #[sqlx(transparent)]
 pub struct Uuid(uuid::Uuid);
 
+impl TryFrom<&str> for Uuid {
+	type Error = uuid::Error;
+
+	fn try_from(value: &str) -> Result<Self, Self::Error> {
+		uuid::Uuid::try_from(value).map(Uuid)
+	}
+}
+
 impl Serialize for Uuid {
 	fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
 	where
@@ -23,9 +31,7 @@ impl<'de> Deserialize<'de> for Uuid {
 		D: serde::Deserializer<'de>,
 	{
 		let s = String::deserialize(deserializer)?;
-		uuid::Uuid::parse_str(&s)
-			.map(Uuid)
-			.map_err(|e| D::Error::custom(format!("uuid parsed failed: {e}")))
+		Self::try_from(s.as_str()).map_err(|e| D::Error::custom(format!("uuid parsed failed: {e}")))
 	}
 }
 

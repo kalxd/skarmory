@@ -9,7 +9,7 @@ pub enum AppError {
 	Forbid(String),
 	NoAuth(String),
 	NotFound(String),
-	DBErr(String),
+	Internal(String),
 	BootErr(String),
 }
 
@@ -25,6 +25,10 @@ impl AppError {
 	pub fn not_found(msg: &str) -> Self {
 		Self::NotFound(msg.to_string())
 	}
+
+	pub fn internal(msg: &str) -> Self {
+		Self::Internal(msg.to_string())
+	}
 }
 
 impl std::fmt::Display for AppError {
@@ -33,7 +37,7 @@ impl std::fmt::Display for AppError {
 			Self::Forbid(s) => write!(f, "{s}"),
 			Self::NoAuth(s) => write!(f, "{s}"),
 			Self::NotFound(s) => write!(f, "{s}"),
-			Self::DBErr(s) => write!(f, "DB Err: {s}"),
+			Self::Internal(s) => write!(f, "{s}"),
 			Self::BootErr(s) => write!(f, "{s}"),
 		}
 	}
@@ -55,7 +59,7 @@ impl From<config::ConfigError> for AppError {
 
 impl From<sqlx::Error> for AppError {
 	fn from(value: sqlx::Error) -> Self {
-		Self::DBErr(value.to_string())
+		Self::Internal(value.to_string())
 	}
 }
 
@@ -65,7 +69,7 @@ impl WebResponseError for AppError {
 			Self::Forbid(_) => StatusCode::FORBIDDEN,
 			Self::NoAuth(_) => StatusCode::UNAUTHORIZED,
 			Self::NotFound(_) => StatusCode::NOT_FOUND,
-			Self::DBErr(_) => StatusCode::BAD_REQUEST,
+			Self::Internal(_) => StatusCode::BAD_REQUEST,
 			Self::BootErr(_) => StatusCode::BAD_REQUEST,
 		}
 	}
