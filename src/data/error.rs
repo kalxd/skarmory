@@ -4,7 +4,7 @@ use ntex::{
 };
 use serde::Serialize;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum AppError {
 	Forbid(String),
 	NoAuth(String),

@@ -14,3 +14,12 @@ create table if not exists "session" (
 	   user_id int not null references "user" ("id"),
 	   create_at timestamptz not null default now()
 );
+
+create table if not exists "cup" (
+	   id int primary key generated always as identity,
+	   user_id int not null references "user" ("id"),
+	   nick varchar(64),
+	   volum int not null,
+	   color varchar(32) not null default '白色',
+	   create_at timestamptz not null default now()
+);

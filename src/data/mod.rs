@@ -30,10 +30,12 @@ impl<E: ErrorRenderer> FromRequest<E> for User {
 		req: &ntex::web::HttpRequest,
 		_: &mut ntex::http::Payload,
 	) -> Result<Self, Self::Error> {
+		let e = AppError::no_auth("尚未登录！");
+
 		let token = req
 			.headers()
 			.get("X-Token")
-			.ok_or(AppError::no_auth("未设置token！"))?
+			.ok_or(e.clone())?
 			.to_str()
 			.map_err(|e| AppError::no_auth(&e.to_string()))?;
 
@@ -41,7 +43,7 @@ impl<E: ErrorRenderer> FromRequest<E> for User {
 			.app_state::<AppEnv>()
 			.ok_or(AppError::internal("AppEnv注入不成功！"))?;
 
-		let token = Uuid::try_from(token).map_err(|_| AppError::no_auth("token格式不正确！"))?;
+		let token = Uuid::try_from(token).map_err(|_| e.clone())?;
 
 		let user = sqlx::query_as!(
 			User,
@@ -53,7 +55,7 @@ inner join session as s on s.user_id = u.id and s.token = $1
 		)
 		.fetch_optional(&app_env.db)
 		.await?
-		.ok_or(error::AppError::no_auth("用户未登录！"))?;
+		.ok_or(e)?;
 
 		Ok(user)
 	}

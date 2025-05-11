@@ -42,7 +42,10 @@ on conflict do nothing
 
 		let user = sqlx::query_as!(
 			User,
-			r#"select id, nick, gender as "gender: Gender" from "user" where nick = $1"#,
+			r#"
+select id, nick, gender as "gender: Gender"
+from "user"
+where nick = $1"#,
 			nickname
 		)
 		.fetch_one(&self.0.db)
@@ -66,7 +69,10 @@ returning token as "token!: Uuid"
 		let salt_password = SaltPassword::new(password, self.0.salt.as_deref());
 		let user = sqlx::query_as!(
 			User,
-			r#"select id, nick, gender as "gender: Gender" from "user" where nick = $1 and password = md5($2)"#,
+			r#"
+select id, nick, gender as "gender: Gender"
+from "user"
+where nick = $1 and password = md5($2)"#,
 			nick,
 			salt_password as SaltPassword
 		)
