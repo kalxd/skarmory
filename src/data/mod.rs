@@ -1,4 +1,4 @@
-use db::Uuid;
+use db::{Gender, Uuid};
 use ntex::web::{ErrorRenderer, FromRequest};
 use serde::Serialize;
 use sqlx::PgPool;
@@ -20,6 +20,7 @@ pub struct AppEnv {
 pub struct User {
 	pub id: i32,
 	pub nick: String,
+	pub gender: Gender,
 }
 
 impl<E: ErrorRenderer> FromRequest<E> for User {
@@ -45,7 +46,7 @@ impl<E: ErrorRenderer> FromRequest<E> for User {
 		let user = sqlx::query_as!(
 			User,
 			r#"
-select u.id, u.nick from "user" as u
+select u.id, u.nick, u.gender as "gender: Gender" from "user" as u
 inner join session as s on s.user_id = u.id and s.token = $1
 "#,
 			token as Uuid

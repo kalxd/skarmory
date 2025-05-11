@@ -47,3 +47,12 @@ impl<'a> SaltPassword<'a> {
 		}
 	}
 }
+
+#[derive(Debug, PartialEq, Eq, sqlx::Type, Deserialize, Serialize)]
+#[sqlx(type_name = "gender")]
+#[sqlx(rename_all = "lowercase")]
+#[serde(rename_all = "camelCase")]
+pub enum Gender {
+	Male,
+	Female,
+}

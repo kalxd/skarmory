@@ -1,4 +1,7 @@
-use crate::data::error::{AppError, Result};
+use crate::data::{
+	db::Gender,
+	error::{AppError, Result},
+};
 use ntex::web::{self, DefaultError, types::Json};
 use serde::Deserialize;
 
@@ -7,6 +10,7 @@ mod state;
 #[derive(Debug, Deserialize)]
 struct RegisterBody {
 	nick: String,
+	gender: Gender,
 	password: String,
 	repassword: String,
 }
@@ -20,7 +24,9 @@ async fn register_api(
 		return Err(AppError::forbid("两次密码不一致！"));
 	}
 
-	let session = state.register_user(&body.nick, &body.password).await?;
+	let session = state
+		.register_user(&body.nick, &body.password, &body.gender)
+		.await?;
 	Ok(Json(session))
 }
 
