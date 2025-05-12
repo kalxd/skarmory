@@ -31,7 +31,7 @@ struct CupWithVol {
 	nick: Option<String>,
 	volum: i32,
 	color: String,
-	usage: i32,
+	value: i64,
 }
 
 #[derive(Debug, Deserialize)]
@@ -54,7 +54,7 @@ async fn create_cup_api(
 		r#"
 insert into cup (user_id, volum, color, nick)
 values ($1, $2, $3, $4)
-returning id, user_id, volum, color, nick, 0 as "usage!"
+returning id, user_id, volum, color, nick, 0 as "value!"
 "#,
 		user.id,
 		volumn,
@@ -105,9 +105,22 @@ where cup_id = $1
 		cup.id
 	)
 	.fetch_one(&mut *tx)
-	.await?;
+	.await? as i32;
 
-	dbg!(cur_volum);
+	let vol = match body.op {
+		CupOp::PourIn if body.value + cur_volum > 100 => {
+			Err(AppError::forbid("无法加水：超出杯子容量！"))
+		}
+		CupOp::PourIn => Ok(body.value),
+		CupOp::PourOut if body.value > cur_volum => {
+			Err(AppError::forbid("无法倒出过的水：超出剩余水量！"))
+		}
+		CupOp::PourOut => Ok(-body.value),
+		CupOp::Drink if body.value > cur_volum => {
+			Err(AppError::forbid("无法喝过多的水：超出剩余水量！"))
+		}
+		CupOp::Drink => Ok(-body.value),
+	}?;
 
 	sqlx::query!(
 		r#"
@@ -115,7 +128,7 @@ insert into cup_operator (cup_id, value, op)
 values ($1, $2, $3)
 "#,
 		cup.id,
-		&body.value,
+		vol,
 		&body.op as &CupOp
 	)
 	.execute(&mut *tx)
@@ -126,8 +139,28 @@ values ($1, $2, $3)
 	Ok(Json(()))
 }
 
+#[web::get("/list")]
+async fn list_cup(user: User, state: State) -> Result<Json<Vec<CupWithVol>>> {
+	let xs = sqlx::query_as!(
+		CupWithVol,
+		r#"
+select cup.id, cup.user_id, cup.nick, cup.volum, cup.color, op.value as "value!"
+from
+cup,
+lateral (select coalesce(sum(value), 0) as value from cup_operator where cup_id = cup.id) as op
+where cup.user_id = $1
+"#,
+		user.id
+	)
+	.fetch_all(&state.0.db)
+	.await?;
+
+	Ok(Json(xs))
+}
+
 pub fn api() -> Scope<DefaultError> {
 	web::scope("/cup")
 		.service(create_cup_api)
 		.service(create_cup_op_api)
+		.service(list_cup)
 }
