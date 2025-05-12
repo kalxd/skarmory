@@ -56,3 +56,13 @@ pub enum Gender {
 	Male,
 	Female,
 }
+
+#[derive(Debug, PartialEq, Eq, sqlx::Type, Deserialize, Serialize)]
+#[sqlx(type_name = "cup_op")]
+#[sqlx(rename_all = "kebab-case")]
+#[serde(rename_all = "camelCase")]
+pub enum CupOp {
+	PourIn,
+	PourOut,
+	Drink,
+}
