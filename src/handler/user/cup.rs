@@ -24,7 +24,7 @@ struct CreateCupBody {
 	color: String,
 }
 
-#[web::post("/")]
+#[web::post("/create")]
 async fn create_cup_api(user: User, state: State, body: Json<CreateCupBody>) -> Result<Json<Cup>> {
 	let volumn = i32::try_from(body.volum)
 		.map_err(|_| AppError::forbid(&format!("无法正确处理杯子容量值：{}。", body.volum)))?;
