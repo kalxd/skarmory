@@ -10,7 +10,6 @@ pub enum AppError {
 	NoAuth(String),
 	NotFound(String),
 	Internal(String),
-	BootErr(String),
 }
 
 impl AppError {
@@ -38,7 +37,6 @@ impl std::fmt::Display for AppError {
 			Self::NoAuth(s) => write!(f, "{s}"),
 			Self::NotFound(s) => write!(f, "{s}"),
 			Self::Internal(s) => write!(f, "{s}"),
-			Self::BootErr(s) => write!(f, "{s}"),
 		}
 	}
 }
@@ -47,13 +45,13 @@ impl std::error::Error for AppError {}
 
 impl From<std::io::Error> for AppError {
 	fn from(value: std::io::Error) -> Self {
-		Self::BootErr(value.to_string())
+		Self::Internal(value.to_string())
 	}
 }
 
 impl From<config::ConfigError> for AppError {
 	fn from(value: config::ConfigError) -> Self {
-		Self::BootErr(value.to_string())
+		Self::Internal(value.to_string())
 	}
 }
 
@@ -70,7 +68,6 @@ impl WebResponseError for AppError {
 			Self::NoAuth(_) => StatusCode::UNAUTHORIZED,
 			Self::NotFound(_) => StatusCode::NOT_FOUND,
 			Self::Internal(_) => StatusCode::BAD_REQUEST,
-			Self::BootErr(_) => StatusCode::BAD_REQUEST,
 		}
 	}
 
