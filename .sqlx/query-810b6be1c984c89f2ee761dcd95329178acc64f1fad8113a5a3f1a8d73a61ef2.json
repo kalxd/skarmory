@@ -1,0 +1,22 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\nselect coalesce(sum(value), 0) as \"v!\" from cup_operator\nwhere cup_id = $1\n",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "v!",
+        "type_info": "Int8"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4"
+      ]
+    },
+    "nullable": [
+      null
+    ]
+  },
+  "hash": "810b6be1c984c89f2ee761dcd95329178acc64f1fad8113a5a3f1a8d73a61ef2"
+}

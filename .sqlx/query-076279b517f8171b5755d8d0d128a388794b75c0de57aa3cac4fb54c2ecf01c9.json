@@ -1,0 +1,27 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\ninsert into cup_operator (cup_id, value, op)\nvalues ($1, $2, $3)\n",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Int4",
+        {
+          "Custom": {
+            "name": "cup_op",
+            "kind": {
+              "Enum": [
+                "pour-in",
+                "pour-out",
+                "drink"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "076279b517f8171b5755d8d0d128a388794b75c0de57aa3cac4fb54c2ecf01c9"
+}

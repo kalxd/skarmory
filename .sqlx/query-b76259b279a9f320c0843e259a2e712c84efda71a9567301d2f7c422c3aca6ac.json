@@ -1,0 +1,52 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\nselect cup.id, cup.user_id, cup.nick, cup.volum, cup.color, op.value as \"value!\"\nfrom\ncup,\nlateral (select coalesce(sum(value), 0) as value from cup_operator where cup_id = cup.id) as op\nwhere cup.user_id = $1\n",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "user_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 2,
+        "name": "nick",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 3,
+        "name": "volum",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 4,
+        "name": "color",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 5,
+        "name": "value!",
+        "type_info": "Int8"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      true,
+      false,
+      false,
+      null
+    ]
+  },
+  "hash": "b76259b279a9f320c0843e259a2e712c84efda71a9567301d2f7c422c3aca6ac"
+}

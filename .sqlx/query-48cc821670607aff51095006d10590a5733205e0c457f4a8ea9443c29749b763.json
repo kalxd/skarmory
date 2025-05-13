@@ -1,0 +1,45 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\nselect id, nick, gender as \"gender: Gender\"\nfrom \"user\"\nwhere nick = $1 and password = md5($2)",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "nick",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "gender: Gender",
+        "type_info": {
+          "Custom": {
+            "name": "gender",
+            "kind": {
+              "Enum": [
+                "male",
+                "female"
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Text"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "48cc821670607aff51095006d10590a5733205e0c457f4a8ea9443c29749b763"
+}

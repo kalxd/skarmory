@@ -1,0 +1,4 @@
+/target
+/config/config.toml
+/config/table.sql
+.env

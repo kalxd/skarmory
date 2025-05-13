@@ -1,0 +1,22 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\ninsert into session (user_id, token)\nvalues ($1, gen_random_uuid())\nreturning token as \"token!: Uuid\"\n",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "token!: Uuid",
+        "type_info": "Uuid"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "f86886d60703ee02a64e9db1ed5dec9a7c7e85a5d1c50fa545f4572739ba076f"
+}

@@ -1,0 +1,47 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\nselect cup.id, cup.user_id, cup.nick, cup.volum, cup.color\nfrom cup\nwhere cup.id = $1 and cup.user_id = $2\nfor update\n",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "user_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 2,
+        "name": "nick",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 3,
+        "name": "volum",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 4,
+        "name": "color",
+        "type_info": "Varchar"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      true,
+      false,
+      false
+    ]
+  },
+  "hash": "0a437d59202a190153f61c67dc0b330ce62ca019377fac99aeb5068b5838fb56"
+}

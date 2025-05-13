@@ -1,0 +1,26 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\ninsert into \"user\" (nick, password, gender)\nvalues ($1, md5($2), $3)\non conflict do nothing\n",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Varchar",
+        "Text",
+        {
+          "Custom": {
+            "name": "gender",
+            "kind": {
+              "Enum": [
+                "male",
+                "female"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "f62c25a76688b3c7891af725c8f5da3e7b98c9080068ece7fbde21d3c37e9127"
+}
