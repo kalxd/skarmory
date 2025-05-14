@@ -1,6 +1,7 @@
 use config::{Config, File};
+use log::LevelFilter;
 use serde::Deserialize;
-use sqlx::{PgPool, postgres::PgConnectOptions};
+use sqlx::{ConnectOptions, PgPool, postgres::PgConnectOptions};
 use std::fs;
 
 use super::error::Result;
@@ -41,7 +42,8 @@ impl FileConfig {
 			.port(self.database.port)
 			.username(&self.database.user)
 			.password(&self.database.password)
-			.database(&self.database.database);
+			.database(&self.database.database)
+			.log_statements(LevelFilter::Debug);
 
 		PgPool::connect_with(option).await.map_err(Into::into)
 	}

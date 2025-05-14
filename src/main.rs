@@ -5,8 +5,19 @@ use std::sync::Arc;
 mod data;
 mod handler;
 
+fn init_logger() {
+	use env_logger::Env;
+
+	let env = Env::new();
+	let env = env.filter_or("RUST_LOG", "debug");
+
+	env_logger::init_from_env(dbg!(env));
+}
+
 #[ntex::main]
 async fn main() -> Result<()> {
+	init_logger();
+
 	let config = config::FileConfig::read_default_config()?;
 	let pool = config.connect_to_db().await?;
 	let state = data::AppEnv {
