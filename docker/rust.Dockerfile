@@ -1,4 +1,4 @@
-FROM rust:1.86.0 as builder
+FROM rust:1.87.0 as builder
 
 COPY docker/config.toml /usr/local/cargo/config.toml
 COPY . .
@@ -6,7 +6,7 @@ COPY . .
 ENV SQLX_OFFLINE true
 RUN cargo install --path .
 
-FROM rust:1.86.0
+FROM rust:1.87.0
 
 COPY --from=builder /usr/local/cargo/bin/skarmory /opt/skarmory
 COPY config /opt/config
