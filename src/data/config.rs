@@ -1,7 +1,7 @@
 use config::{Config, File};
 use log::LevelFilter;
 use serde::Deserialize;
-use sqlx::{ConnectOptions, PgPool, postgres::PgConnectOptions};
+use sqlx::{postgres::PgConnectOptions, ConnectOptions, PgPool};
 use std::fs;
 
 use super::error::Result;
