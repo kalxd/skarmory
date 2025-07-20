@@ -28,7 +28,7 @@ database = "postgres"
 完毕后即可启动镜像：
 
 ```fish
-docker run -p 3000:3000 -v myconf.toml:/opt/config/config.toml skarmory
+docker run -p 3000:3000 -v $PWD:myconf.toml:/opt/config/config.toml skarmory
 ```
 
 # 协议
